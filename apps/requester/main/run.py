@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding:utf-8
 from loguru import logger
-import requests
+import requests, json
 
 async def requester(url, method="POST", output="JSON", headers=None, body=None):
     logger.info(f"[Requester] APP 执行参数: url={url}, method={method}, output={output}")
@@ -33,6 +33,56 @@ async def requester(url, method="POST", output="JSON", headers=None, body=None):
         logger.error(f"[Requester] APP 执行错误: {str(e)}")
         return {"status": 2, "result": str(e)}
 
+async def batch_requester(source, extract, url, method="POST", output="JSON", headers=None, body=None):
+    logger.info(f"[BatchRequester] APP 执行参数: source={source}, extract={extract}, body={body}")
+    try:
+        # 解析 source 为列表，兼容首尾多余引号和常见格式
+        items = None
+        if isinstance(source, str):
+            src = source.strip()
+            # 去除首尾引号
+            if src.startswith('"') and src.endswith('"'):
+                src = src[1:-1]
+            # 替换转义
+            src = src.replace('\\"', '"')
+            # 尝试 json 解析
+            try:
+                items = json.loads(src)
+            except Exception as e:
+                logger.error(f"[BatchRequester] source json.loads 失败: {e}, src={src}")
+                items = None
+        elif isinstance(source, list):
+            items = source
+        else:
+            logger.error("[BatchRequester] source 类型错误")
+            return {"status": 1, "result": "source 类型错误"}
+
+        if not isinstance(items, list):
+            logger.error(f"[BatchRequester] source 解析后不是 list 类型: {type(items)}")
+            return {"status": 1, "result": "source 解析后不是 list 类型"}
+
+        # 解析 extract 映射规则
+        extract_map = _parse_kv_lines(extract)
+        # 解析外部 body 参数
+        static_body = _parse_kv_lines(body) if body else {}
+
+        results = []
+        for item in items:
+            if not isinstance(item, dict):
+                logger.error(f"[BatchRequester] item 不是 dict 类型: {item}")
+                results.append({"status": 1, "result": f"item 不是 dict 类型: {item}"})
+                continue
+            # 构建 body，合并静态参数和动态参数
+            body_dict = static_body.copy()
+            for k, item_key in extract_map.items():
+                body_dict[k] = item.get(item_key)
+            # 调用 requester
+            result = await requester(url=url, method=method, output=output, headers=headers, body='\n'.join([f'{k}:{v}' for k,v in body_dict.items() if v is not None]))
+            results.append(result)
+        return {"status": 0, "result": results}
+    except Exception as e:
+        logger.error(f"[BatchRequester] APP 执行错误: {str(e)}")
+        return {"status": 2, "result": str(e)}
 
 def _parse_kv_lines(text):
     data = {}
@@ -43,7 +93,6 @@ def _parse_kv_lines(text):
     return data
 
 def _try_parse_json(text):
-    import json
     if isinstance(text, dict):
         return text
     try:
