@@ -1,0 +1,54 @@
+{
+    "identification": "w5soar",
+    "is_public": true,
+    "name": "requester",
+    "version": "0.1",
+    "description": "requester",
+    "action": [
+        {
+            "name": "请求器",
+            "func": "requester"
+        }
+    ],
+    "args": {
+        "requester": [
+            {
+                "key": "url",
+                "type": "text",
+                "required": true
+            },
+            {
+                "key": "method",
+                "type": "select",
+                "title": "请求方式",
+                "data": [
+                    "GET",
+                    "POST"
+                ],
+                "default": "POST",
+                "required": true
+            },
+            {
+                "key": "output",
+                "type": "select",
+                "title": "输出方式",
+                "data": [
+                    "TEXT",
+                    "JSON"
+                ],
+                "default": "JSON",
+                "required": true
+            },
+            {
+                "key": "headers",
+                "type": "textarea",
+                "required": false
+            },
+            {
+                "key": "body",
+                "type": "textarea",
+                "required": false
+            }
+        ]
+    }
+}

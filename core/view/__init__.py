@@ -54,14 +54,14 @@ class Decorator(object):
                 'response': response_data
             }
 
-            logger.info(
-                "{method} {url} {request_id} {code} {elapsed_time} {response}",
-                url=log_data["url"],
-                method=log_data["method"],
-                request_id=log_data["request_id"],
-                code=log_data["code"],
-                elapsed_time=log_data["elapsed_time"],
-                response=log_data["response"]
-            )
+            # logger.info(
+            #     "{method} {url} {request_id} {code} {elapsed_time} {response}",
+            #     url=log_data["url"],
+            #     method=log_data["method"],
+            #     request_id=log_data["request_id"],
+            #     code=log_data["code"],
+            #     elapsed_time=log_data["elapsed_time"],
+            #     response=log_data["response"]
+            # )
 
             return resp

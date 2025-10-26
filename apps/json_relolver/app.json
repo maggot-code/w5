@@ -1,0 +1,34 @@
+{
+    "identification": "w5soar",
+    "is_public": true,
+    "name": "json relolver",
+    "version": "0.1",
+    "description": "W5 SOAR - json relolver",
+    "type": "解释器",
+    "action": [
+        {
+            "name": "JSON转换String",
+            "func": "json2string"
+        },
+        {
+            "name": "String转换JSON",
+            "func": "string2json"
+        }
+    ],
+    "args": {
+        "json2string": [
+            {
+                "key": "input_json",
+                "type": "text",
+                "required": true
+            }
+        ],
+        "string2json": [
+            {
+                "key": "input_string",
+                "type": "text",
+                "required": true
+            }
+        ]
+    }
+}

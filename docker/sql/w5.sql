@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS w5_db;
 create database w5_db DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 flush privileges;
 
